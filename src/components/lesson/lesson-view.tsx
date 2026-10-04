@@ -1,6 +1,8 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import type { UIMessage } from "ai";
 import { motion } from "motion/react";
 import { BookOpenIcon, CircleHelpIcon, ShapesIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -20,7 +22,19 @@ const section = (order: number) => ({
   transition: { duration: 0.5, delay: order * 0.1, ease: EASE_OUT },
 });
 
-export function LessonView({ lesson }: { lesson: Lesson }) {
+type LessonViewProps = { lesson: Lesson; askHistory: UIMessage[] };
+
+/** Progress is a fire-and-forget record; the refresh updates the course map. */
+async function reportProgress(body: Record<string, unknown>) {
+  await fetch("/api/progress", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+}
+
+export function LessonView({ lesson, askHistory }: LessonViewProps) {
+  const router = useRouter();
   const playerRef = useRef<LessonPlayerHandle>(null);
   // The moment the learner paused to ask about, or null while just watching.
   const [askAt, setAskAt] = useState<number | null>(null);
@@ -41,9 +55,16 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
       </motion.header>
 
       <motion.div {...section(1)} className="flex flex-col gap-4">
-        <LessonPlayer ref={playerRef} lesson={lesson} onAsk={setAskAt} />
+        <LessonPlayer
+          ref={playerRef}
+          lesson={lesson}
+          questionCount={askHistory.filter((m) => m.role === "user").length}
+          onAsk={setAskAt}
+          onEnded={() => reportProgress({ event: "watched", lessonId: lesson.id }).then(() => router.refresh())}
+        />
         <AskTutor
           lesson={lesson}
+          history={askHistory}
           time={askAt}
           onClose={() => setAskAt(null)}
           onResume={() => {
@@ -75,7 +96,12 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
             <LessonNotes notes={lesson.notes} />
           </TabsContent>
           <TabsContent value="quiz">
-            <LessonQuiz questions={lesson.quiz} />
+            <LessonQuiz
+              questions={lesson.quiz}
+              onComplete={(correct, total) =>
+                reportProgress({ event: "quiz", lessonId: lesson.id, correct, total })
+              }
+            />
           </TabsContent>
           {lesson.hasPlayground && (
             <TabsContent value="playground">

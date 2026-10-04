@@ -10,8 +10,22 @@ import { Field, FieldContent, FieldLabel, FieldTitle } from "@/components/ui/fie
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import type { QuizQuestion } from "@/mastra/schemas";
 
-export function LessonQuiz({ questions }: { questions: QuizQuestion[] }) {
+type LessonQuizProps = {
+  questions: QuizQuestion[];
+  /** Called once every question is answered. */
+  onComplete?: (correct: number, total: number) => void;
+};
+
+export function LessonQuiz({ questions, onComplete }: LessonQuizProps) {
   const [answers, setAnswers] = useState<Record<number, number>>({});
+
+  function answer(index: number, option: number) {
+    const next = { ...answers, [index]: option };
+    setAnswers(next);
+    if (Object.keys(next).length === questions.length) {
+      onComplete?.(questions.filter((q, i) => next[i] === q.correctIndex).length, questions.length);
+    }
+  }
 
   const answered = Object.keys(answers).length;
   const correct = questions.filter((q, i) => answers[i] === q.correctIndex).length;
@@ -25,7 +39,7 @@ export function LessonQuiz({ questions }: { questions: QuizQuestion[] }) {
           index={index}
           question={question}
           answer={answers[index]}
-          onAnswer={(option) => setAnswers((prev) => ({ ...prev, [index]: option }))}
+          onAnswer={(option) => answer(index, option)}
         />
       ))}
 

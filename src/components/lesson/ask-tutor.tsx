@@ -17,6 +17,7 @@ import {
   useAuiState,
 } from "@assistant-ui/react";
 import { AssistantChatTransport, useChatRuntime } from "@assistant-ui/ai-sdk";
+import type { UIMessage } from "ai";
 import { AnimatePresence, motion } from "motion/react";
 import {
   ArrowRightIcon,
@@ -47,6 +48,8 @@ const CONFIG = AuiConfig({
 
 type AskTutorProps = {
   lesson: Lesson;
+  /** Earlier questions in this lesson, restored from the tutor's memory. */
+  history: UIMessage[];
   /** Where the lesson was paused, or null when the panel is closed. */
   time: number | null;
   onClose: () => void;
@@ -57,9 +60,10 @@ type AskTutorProps = {
  * Questions during a lesson. The runtime lives as long as the lesson, so the
  * conversation survives closing and reopening the panel.
  */
-export function AskTutor({ lesson, time, onClose, onResume }: AskTutorProps) {
+export function AskTutor({ lesson, history, time, onClose, onResume }: AskTutorProps) {
   // useChatRuntime always sends with the latest transport, so questions carry the current pause time.
   const runtime = useChatRuntime({
+    messages: history,
     transport: new AssistantChatTransport({
       api: "/api/ask",
       body: { courseId: lesson.courseId, nodeId: lesson.nodeId, time: time ?? 0 },

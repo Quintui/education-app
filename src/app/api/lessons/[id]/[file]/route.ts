@@ -1,4 +1,4 @@
-import { getLesson, readLessonFile } from "@/mastra/lib/lesson-store";
+import { getLesson, readLessonFile } from "@/mastra/lib/store";
 import { SANDBOX_CSP, renderPlaygroundHtml, renderStageHtml } from "@/mastra/lib/stage";
 
 const AUDIO_FILES = new Set(["narration.mp3", "music.mp3"]);

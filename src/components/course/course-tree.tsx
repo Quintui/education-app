@@ -1,179 +1,171 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "motion/react";
-import { EASE_OUT, springy } from "@/lib/motion";
+import { MessageCircleQuestionIcon, NetworkIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { Course, CourseLesson } from "@/mastra/schemas";
+import { LessonStatusIcon } from "./lesson-status-icon";
 
-const WIDTH = 280;
-const HEIGHT = 230;
-const TRUNK_X = WIDTH / 2;
-const GROUND_Y = 222;
-const TRUNK_TOP = 34;
+const CARD_W = 196;
+const CARD_H = 48;
+const GAP_X = 48;
+const ROW_H = 58;
 
-type Point = { x: number; y: number };
-
-/** Point on a quadratic Bézier curve. */
-function bezier(p0: Point, c: Point, p1: Point, t: number): Point {
-  const u = 1 - t;
-  return { x: u * u * p0.x + 2 * u * t * c.x + t * t * p1.x, y: u * u * p0.y + 2 * u * t * c.y + t * t * p1.y };
-}
-
-type NodeState = { isBuilt: boolean; isCurrent: boolean };
+type Placed = { lesson: CourseLesson; level: number; x: number; y: number };
 
 /**
- * The course drawn as the tree it is: fundamental (trunk) lessons on the trunk,
- * every module a branch carrying its lessons, and details sticking out as leaves.
+ * A tidy tree from the "hangs on" links: foundations on the left, what builds on
+ * them to the right. Leaves get their own row; a parent sits centred on its children.
  */
-export function CourseTree({
-  course,
-  builtIds,
-  currentId,
-}: {
+function layoutTree(lessons: CourseLesson[]) {
+  const ids = new Set(lessons.map((l) => l.id));
+  const children = new Map<string, CourseLesson[]>();
+  const roots: CourseLesson[] = [];
+  for (const lesson of lessons) {
+    if (lesson.parentId && ids.has(lesson.parentId)) {
+      children.set(lesson.parentId, [...(children.get(lesson.parentId) ?? []), lesson]);
+    } else {
+      roots.push(lesson);
+    }
+  }
+
+  const placed: Placed[] = [];
+  let nextRow = 0;
+  const visit = (lesson: CourseLesson, level: number): number => {
+    const kids = children.get(lesson.id) ?? [];
+    const rows = kids.map((kid) => visit(kid, level + 1));
+    const row = rows.length > 0 ? (rows[0] + rows[rows.length - 1]) / 2 : nextRow++;
+    placed.push({ lesson, level, x: level * (CARD_W + GAP_X), y: row * ROW_H });
+    return row;
+  };
+  roots.forEach((root) => visit(root, 0));
+
+  const levels = Math.max(...placed.map((p) => p.level)) + 1;
+  return {
+    nodes: placed,
+    width: levels * (CARD_W + GAP_X) - GAP_X,
+    height: nextRow * ROW_H - (ROW_H - CARD_H),
+  };
+}
+
+type CourseTreeProps = {
   course: Course;
   builtIds: Set<string>;
+  watchedIds: Set<string>;
   currentId: string;
-}) {
-  const lessons = course.modules.flatMap((m) => m.lessons);
-  const trunkLessons = lessons.filter((l) => l.depth === "trunk");
-  const branches = course.modules
-    .map((module) => ({ module, lessons: module.lessons.filter((l) => l.depth !== "trunk") }))
-    .filter((branch) => branch.lessons.length > 0);
+};
 
-  const stateOf = (lesson: CourseLesson): NodeState => ({
-    isBuilt: builtIds.has(lesson.id),
-    isCurrent: lesson.id === currentId,
-  });
+export function CourseTreeDialog(props: CourseTreeProps) {
+  const [open, setOpen] = useState(false);
 
   return (
-    <svg viewBox={`0 0 ${WIDTH} ${HEIGHT}`} className="w-full" role="img" aria-label="Your knowledge tree">
-      <line x1={40} x2={WIDTH - 40} y1={GROUND_Y} y2={GROUND_Y} className="stroke-border" strokeWidth={2} strokeLinecap="round" />
-
-      <motion.path
-        d={`M ${TRUNK_X} ${GROUND_Y} L ${TRUNK_X} ${TRUNK_TOP}`}
-        className="stroke-foreground/20"
-        strokeWidth={9}
-        strokeLinecap="round"
-        initial={{ pathLength: 0 }}
-        animate={{ pathLength: 1 }}
-        transition={{ duration: 0.8, ease: EASE_OUT }}
-      />
-
-      {branches.map(({ module, lessons: branchLessons }, k) => {
-        const side = k % 2 === 0 ? -1 : 1;
-        const anchorY = GROUND_Y - 50 - (k + 0.5) * ((GROUND_Y - 50 - TRUNK_TOP) / branches.length);
-        const start = { x: TRUNK_X, y: anchorY };
-        const end = { x: TRUNK_X + side * 112, y: anchorY - 34 };
-        const control = { x: TRUNK_X + side * 46, y: anchorY - 2 };
-        const delay = 0.5 + k * 0.15;
-
-        return (
-          <g key={module.id}>
-            <motion.path
-              d={`M ${start.x} ${start.y} Q ${control.x} ${control.y} ${end.x} ${end.y}`}
-              className="stroke-foreground/20"
-              strokeWidth={4}
-              strokeLinecap="round"
-              fill="none"
-              initial={{ pathLength: 0 }}
-              animate={{ pathLength: 1 }}
-              transition={{ duration: 0.6, delay, ease: EASE_OUT }}
-            />
-            {branchLessons.map((lesson, i) => {
-              const t = 0.35 + 0.65 * (branchLessons.length === 1 ? 0.5 : i / (branchLessons.length - 1));
-              const point = bezier(start, control, end, t);
-              // Leaves stick out above and below the branch, alternating.
-              const offset = lesson.depth === "leaf" ? (i % 2 === 0 ? -12 : 12) : 0;
-              return (
-                <TreeNode
-                  key={lesson.id}
-                  lesson={lesson}
-                  x={point.x}
-                  y={point.y + offset}
-                  side={side}
-                  delay={delay + 0.3 + i * 0.08}
-                  {...stateOf(lesson)}
-                />
-              );
-            })}
-          </g>
-        );
-      })}
-
-      {trunkLessons.map((lesson, i) => {
-        const y = GROUND_Y - 18 - i * ((GROUND_Y - 30 - TRUNK_TOP) / Math.max(trunkLessons.length, 1));
-        return <TreeNode key={lesson.id} lesson={lesson} x={TRUNK_X} y={y} side={0} delay={0.3 + i * 0.1} {...stateOf(lesson)} />;
-      })}
-    </svg>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger render={<Button variant="outline" size="sm" />}>
+        <NetworkIcon data-icon="inline-start" />
+        View tree
+      </DialogTrigger>
+      <DialogContent className="flex max-h-[85dvh] flex-col gap-4 sm:max-w-5xl">
+        <DialogHeader>
+          <DialogTitle className="font-heading text-xl">Your knowledge tree</DialogTitle>
+          <DialogDescription className="text-pretty">
+            Each lesson builds on the one to its left. Start from the trunk (bold) and work toward the leaves,
+            so every detail has something to hang on.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="-mx-4 min-h-0 flex-1 overflow-auto px-4 pb-2">
+          <CourseTree {...props} onNavigate={() => setOpen(false)} />
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
 
-function TreeNode({
-  lesson,
-  x,
-  y,
-  side,
-  delay,
-  isBuilt,
-  isCurrent,
-}: {
-  lesson: CourseLesson;
-  x: number;
-  y: number;
-  side: number;
-  delay: number;
-} & NodeState) {
-  const isLeaf = lesson.depth === "leaf";
-  const fill = isBuilt
-    ? "fill-primary"
-    : lesson.question
-      ? "fill-highlight"
-      : lesson.likelyKnown
-        ? "fill-muted-foreground/30"
-        : "fill-card";
+function CourseTree({
+  course,
+  builtIds,
+  watchedIds,
+  currentId,
+  onNavigate,
+}: CourseTreeProps & { onNavigate: () => void }) {
+  const { nodes, width, height } = layoutTree(course.modules.flatMap((m) => m.lessons));
+  const byId = new Map(nodes.map((n) => [n.lesson.id, n]));
 
   return (
-    <Link href={`?lesson=${lesson.id}`} scroll={false} aria-label={lesson.title}>
-      <title>{`${lesson.title} (${lesson.depth})`}</title>
-      {isCurrent && (
-        <motion.circle
-          cx={x}
-          cy={y}
-          r={isLeaf ? 9 : 11}
-          className="fill-primary/25"
-          animate={{ scale: [1, 1.5], opacity: [0.8, 0] }}
-          transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
-          style={{ transformOrigin: `${x}px ${y}px` }}
-        />
-      )}
-      <motion.g
-        initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        transition={{ ...springy, delay }}
-        style={{ transformOrigin: `${x}px ${y}px` }}
-        className="cursor-pointer"
-      >
-        {isLeaf ? (
-          <ellipse
-            cx={x}
-            cy={y}
-            rx={8}
-            ry={4.5}
-            transform={`rotate(${side === 0 ? -30 : side * -35} ${x} ${y})`}
-            className={cn(fill, "stroke-primary/60")}
-            strokeWidth={1.5}
-          />
-        ) : (
-          <circle
-            cx={x}
-            cy={y}
-            r={lesson.depth === "trunk" ? 7.5 : 6}
-            className={cn(fill, isBuilt ? "stroke-primary" : "stroke-primary/60")}
-            strokeWidth={lesson.depth === "trunk" ? 2.5 : 1.5}
-          />
-        )}
-      </motion.g>
-    </Link>
+    <div className="relative" style={{ width, height }}>
+      <svg className="absolute inset-0 overflow-visible" width={width} height={height} aria-hidden>
+        {nodes.map(({ lesson, level, x, y }) => {
+          const parent = lesson.parentId ? byId.get(lesson.parentId) : undefined;
+          if (!parent) return null;
+          const x1 = parent.x + CARD_W;
+          const y1 = parent.y + CARD_H / 2;
+          const y2 = y + CARD_H / 2;
+          const mid = (x1 + x) / 2;
+          return (
+            <motion.path
+              key={lesson.id}
+              d={`M ${x1} ${y1} C ${mid} ${y1}, ${mid} ${y2}, ${x} ${y2}`}
+              fill="none"
+              strokeWidth={1.5}
+              className={watchedIds.has(lesson.id) ? "stroke-primary/60" : "stroke-border"}
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: 0.5, delay: 0.1 + level * 0.15, ease: EASE_OUT }}
+            />
+          );
+        })}
+      </svg>
+
+      {nodes.map(({ lesson, level, x, y }) => {
+        const isCurrent = lesson.id === currentId;
+        const isWatched = watchedIds.has(lesson.id);
+        return (
+          <motion.div
+            key={lesson.id}
+            className="absolute"
+            style={{ left: x, top: y, width: CARD_W, height: CARD_H }}
+            initial={{ opacity: 0, x: -8 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.35, delay: level * 0.15 + y / 4000, ease: EASE_OUT }}
+          >
+            <Link
+              href={`?lesson=${lesson.id}`}
+              scroll={false}
+              onClick={onNavigate}
+              aria-current={isCurrent ? "page" : undefined}
+              className={cn(
+                "hover:border-primary/40 flex size-full items-center gap-2 rounded-lg border px-3 text-[13px] transition-colors",
+                isWatched ? "bg-secondary text-secondary-foreground border-transparent" : "bg-card",
+                isCurrent && "ring-primary ring-2",
+                lesson.depth === "trunk" && "font-medium",
+                lesson.likelyKnown && !isWatched && "text-muted-foreground",
+              )}
+            >
+              <LessonStatusIcon
+                lesson={lesson}
+                isBuilt={builtIds.has(lesson.id)}
+                isWatched={isWatched}
+                isCurrent={isCurrent}
+              />
+              <span className="line-clamp-2 leading-tight">{lesson.title}</span>
+              {lesson.question && (
+                <MessageCircleQuestionIcon className="text-muted-foreground ms-auto size-3.5 shrink-0" />
+              )}
+            </Link>
+          </motion.div>
+        );
+      })}
+    </div>
   );
 }

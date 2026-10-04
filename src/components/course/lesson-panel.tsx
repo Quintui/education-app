@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { UIMessage } from "ai";
 import { ArrowLeftIcon, ArrowRightIcon, MessageCircleQuestionIcon } from "lucide-react";
 import { LessonView } from "@/components/lesson/lesson-view";
 import { Badge } from "@/components/ui/badge";
@@ -8,9 +9,15 @@ import type { Course, Lesson } from "@/mastra/schemas";
 import { HangsOnGate } from "./hangs-on-gate";
 import { LessonBuilder } from "./lesson-builder";
 
-type LessonPanelProps = { course: Course; nodeId: string; lesson: Lesson | null; builtIds: Set<string> };
+type LessonPanelProps = {
+  course: Course;
+  nodeId: string;
+  lesson: Lesson | null;
+  builtIds: Set<string>;
+  askHistory: UIMessage[];
+};
 
-export function LessonPanel({ course, nodeId, lesson, builtIds }: LessonPanelProps) {
+export function LessonPanel({ course, nodeId, lesson, builtIds, askHistory }: LessonPanelProps) {
   const lessons = courseLessons(course);
   const index = lessons.findIndex((l) => l.id === nodeId);
   const node = lessons[index];
@@ -44,7 +51,7 @@ export function LessonPanel({ course, nodeId, lesson, builtIds }: LessonPanelPro
       </div>
 
       {lesson ? (
-        <LessonView lesson={lesson} />
+        <LessonView lesson={lesson} askHistory={askHistory} />
       ) : parentMissing ? (
         <HangsOnGate parent={parent}>{builder}</HangsOnGate>
       ) : (

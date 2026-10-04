@@ -1,7 +1,7 @@
 import { createStep, createWorkflow } from "@mastra/core/workflows";
 import { z } from "zod";
 import { describeAnswers, withIds } from "../lib/course";
-import { saveCourse, slugId } from "../lib/lesson-store";
+import { saveCourse, slugId } from "../lib/store";
 import { forEachThrottled } from "../lib/stream";
 import { DIAGNOSTIC_TASK } from "../prompts/course";
 import {

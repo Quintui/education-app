@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { addLeaf } from "@/mastra/lib/course";
-import { getCourse, saveCourse } from "@/mastra/lib/lesson-store";
+import { getCourse, saveCourse } from "@/mastra/lib/store";
 
 const bodySchema = z.object({
   parentId: z.string(),

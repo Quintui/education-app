@@ -2,6 +2,7 @@
 
 import { useEffect, useImperativeHandle, useRef, useState, type Ref } from "react";
 import { MessageCircleQuestionIcon, PauseIcon, PlayIcon } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { formatTime } from "@/lib/format";
@@ -22,10 +23,13 @@ type LessonPlayerProps = {
   lesson: Lesson;
   /** Pauses the lesson and hands over the moment the learner wants to ask about. */
   onAsk?: (time: number) => void;
+  /** Questions already asked in this lesson. */
+  questionCount?: number;
+  onEnded?: () => void;
   ref?: Ref<LessonPlayerHandle>;
 };
 
-export function LessonPlayer({ lesson, onAsk, ref }: LessonPlayerProps) {
+export function LessonPlayer({ lesson, onAsk, questionCount = 0, onEnded, ref }: LessonPlayerProps) {
   const { id, video } = lesson;
   const frameRef = useRef<HTMLIFrameElement>(null);
   const voiceRef = useRef<HTMLAudioElement>(null);
@@ -142,6 +146,11 @@ export function LessonPlayer({ lesson, onAsk, ref }: LessonPlayerProps) {
           <Button variant="outline" onClick={ask}>
             <MessageCircleQuestionIcon data-icon="inline-start" />
             Ask
+            {questionCount > 0 && (
+              <Badge variant="secondary" className="ms-0.5 tabular-nums">
+                {questionCount}
+              </Badge>
+            )}
           </Button>
         )}
       </div>
@@ -177,6 +186,7 @@ export function LessonPlayer({ lesson, onAsk, ref }: LessonPlayerProps) {
           setPlaying(false);
           musicRef.current?.pause();
         }}
+        onEnded={onEnded}
       />
       {video.hasMusic && (
         <audio

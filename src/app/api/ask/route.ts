@@ -3,8 +3,9 @@ import { createUIMessageStreamResponse, type UIMessage } from "ai";
 import { z } from "zod";
 import { demoAskStream, isDemoMode } from "@/demo/streams";
 import { mastra } from "@/mastra";
+import { ASK_RESOURCE_ID, askThreadId } from "@/mastra/agents/ask-tutor";
 import { buildAskContext } from "@/mastra/lib/ask";
-import { getCourse, getLesson, lessonIdFor } from "@/mastra/lib/lesson-store";
+import { getCourse, getLesson, lessonIdFor } from "@/mastra/lib/store";
 
 const bodySchema = z.object({
   messages: z.array(z.custom<UIMessage>()),
@@ -33,7 +34,11 @@ export async function POST(req: Request) {
     mastra,
     agentId: "ask-tutor",
     version: "v7",
-    params: { messages, system: buildAskContext(course, lesson, time) },
+    params: {
+      messages,
+      system: buildAskContext(course, lesson, time),
+      memory: { thread: askThreadId(lesson.id), resource: ASK_RESOURCE_ID },
+    },
   });
   return createUIMessageStreamResponse({ stream });
 }

@@ -2,30 +2,27 @@
 
 import Link from "next/link";
 import { motion } from "motion/react";
-import {
-  CircleCheckIcon,
-  CircleDashedIcon,
-  CircleIcon,
-  LeafIcon,
-  MessageCircleQuestionIcon,
-} from "lucide-react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { MessageCircleQuestionIcon } from "lucide-react";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { EASE_OUT } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import type { Course, CourseLesson } from "@/mastra/schemas";
-import { CourseTree } from "./course-tree";
+import { CourseTreeDialog } from "./course-tree";
+import { LessonStatusIcon } from "./lesson-status-icon";
 
 type CourseMapProps = {
   course: Course;
   builtIds: string[];
+  watchedIds: string[];
   currentId: string;
 };
 
-export function CourseMap({ course, builtIds, currentId }: CourseMapProps) {
+export function CourseMap({ course, builtIds, watchedIds, currentId }: CourseMapProps) {
   const built = new Set(builtIds);
+  const watched = new Set(watchedIds);
   const lessons = course.modules.flatMap((m) => m.lessons);
   const titles = new Map(lessons.map((l) => [l.id, l.title]));
 
@@ -38,18 +35,18 @@ export function CourseMap({ course, builtIds, currentId }: CourseMapProps) {
     >
       <Card>
         <CardHeader>
-          <CardDescription>Your knowledge tree</CardDescription>
+          <CardDescription>Your course</CardDescription>
           <CardTitle className="font-heading text-xl leading-tight tracking-tight">{course.title}</CardTitle>
+          <CardAction>
+            <CourseTreeDialog course={course} builtIds={built} watchedIds={watched} currentId={currentId} />
+          </CardAction>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <CourseTree course={course} builtIds={built} currentId={currentId} />
-          <p className="text-muted-foreground text-center text-xs text-pretty">
-            Trunk first, then branches, then leaves, so every detail has something to hang on.
-          </p>
           <div className="flex flex-col gap-1.5">
-            <Progress value={(built.size / lessons.length) * 100} aria-label="Course progress" />
+            <Progress value={(watched.size / lessons.length) * 100} aria-label="Course progress" />
             <span className="text-muted-foreground text-xs tabular-nums">
-              {built.size} of {lessons.length} lessons ready
+              {watched.size} of {lessons.length} watched
+              {built.size > watched.size && ` · ${built.size - watched.size} ready to watch`}
             </span>
           </div>
 
@@ -66,6 +63,7 @@ export function CourseMap({ course, builtIds, currentId }: CourseMapProps) {
                       lesson={lesson}
                       parentTitle={lesson.parentId ? titles.get(lesson.parentId) : undefined}
                       isBuilt={built.has(lesson.id)}
+                      isWatched={watched.has(lesson.id)}
                       isCurrent={lesson.id === currentId}
                     />
                   ))}
@@ -83,11 +81,13 @@ function LessonRow({
   lesson,
   parentTitle,
   isBuilt,
+  isWatched,
   isCurrent,
 }: {
   lesson: CourseLesson;
   parentTitle: string | undefined;
   isBuilt: boolean;
+  isWatched: boolean;
   isCurrent: boolean;
 }) {
   const isLeaf = lesson.depth === "leaf";
@@ -125,7 +125,7 @@ function LessonRow({
               transition={{ type: "spring", stiffness: 400, damping: 34 }}
             />
           )}
-          <LessonIcon lesson={lesson} isBuilt={isBuilt} isCurrent={isCurrent} />
+          <LessonStatusIcon lesson={lesson} isBuilt={isBuilt} isWatched={isWatched} isCurrent={isCurrent} />
           <span className={cn("truncate", lesson.likelyKnown && !isCurrent && "text-muted-foreground")}>
             {lesson.title}
           </span>
@@ -135,22 +135,9 @@ function LessonRow({
           <span className="capitalize">{lesson.depth}</span>
           {parentTitle ? ` · hangs on “${parentTitle}”` : " · a fundamental principle"}
           {lesson.question ? ` · from your question` : ""}
+          {isWatched ? " · watched" : isBuilt ? " · ready to watch" : ""}
         </TooltipContent>
       </Tooltip>
     </motion.li>
   );
-}
-
-function LessonIcon({ lesson, isBuilt, isCurrent }: { lesson: CourseLesson; isBuilt: boolean; isCurrent: boolean }) {
-  if (isBuilt) return <CircleCheckIcon className="text-primary size-4 shrink-0" />;
-  if (isCurrent) {
-    return (
-      <span className="flex size-4 shrink-0 items-center justify-center">
-        <span className="bg-primary size-2 animate-pulse rounded-full" />
-      </span>
-    );
-  }
-  if (lesson.depth === "leaf") return <LeafIcon className="text-muted-foreground size-4 shrink-0" />;
-  if (lesson.likelyKnown) return <CircleDashedIcon className="text-muted-foreground size-4 shrink-0" />;
-  return <CircleIcon className="text-muted-foreground/60 size-4 shrink-0" />;
 }

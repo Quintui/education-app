@@ -12,6 +12,7 @@ cp .env.example .env.local   # add OPENROUTER_API_KEY and ELEVENLABS_API_KEY (or
 npm install
 npm run dev                  # app on http://localhost:3000
 npm run studio               # Mastra Studio on http://localhost:4111
+npm run db:studio            # browse the local SQLite database
 ```
 
 ## How it works
@@ -38,8 +39,12 @@ plan-lesson (Opus, from a brief: learner profile, course map, what earlier lesso
 
 - `src/app/api/course/route.ts` runs the knowledge check or, when the last message carries answers, the course workflow.
 - `src/app/api/lesson/route.ts` builds a lesson; the course page starts it when a lesson is opened.
-- `src/components/course/` renders every streamed state: knowledge check, course draft, course map, lesson builder.
+- `src/components/course/` renders every streamed state: knowledge check, course draft, knowledge tree, lesson builder.
+- `src/app/api/ask/route.ts` answers questions asked mid-lesson with the paused moment as context; the tutor can
+  suggest growing the question into a new leaf lesson on the tree.
 - **Demo mode:** without `OPENROUTER_API_KEY`, `src/demo/streams.ts` replays the same data parts with realistic timing,
   so the full UI can be developed and recorded without spending credits. Demo lessons use the fixture in `demo/lesson/`.
-- Courses and lessons are stored on disk in `.data/`. Swap `src/mastra/lib/lesson-store.ts` for a database and blob
-  storage in production.
+- **Everything is local.** One SQLite file, `.data/lumen.db`, holds courses, lessons and progress (Drizzle,
+  `src/mastra/db/`) and Mastra's own storage: workflow runs, traces and the Ask tutor's memory, so questions
+  are still there when you come back. Audio, scene code and playgrounds are files in `.data/lessons/`.
+- Schema changes: edit `src/mastra/db/schema.ts`, run `npm run db:generate`; migrations apply on startup.

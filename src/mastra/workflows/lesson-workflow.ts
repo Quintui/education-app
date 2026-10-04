@@ -9,7 +9,7 @@ import {
   readLessonFile,
   saveLesson,
   writeLessonFile,
-} from "../lib/lesson-store";
+} from "../lib/store";
 import { extractCode, parseNarration, resolveCues } from "../lib/narration";
 import { NOTES_TASK, PLAYGROUND_TASK, QUIZ_TASK } from "../prompts/tutor";
 import {

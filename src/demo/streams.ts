@@ -10,7 +10,7 @@ import {
   saveLesson,
   slugId,
   writeLessonFile,
-} from "@/mastra/lib/lesson-store";
+} from "@/mastra/lib/store";
 import type {
   CourseOutline,
   CoursePart,

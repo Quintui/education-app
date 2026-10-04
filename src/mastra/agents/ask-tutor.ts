@@ -1,5 +1,6 @@
 import { Agent } from "@mastra/core/agent";
 import { createTool } from "@mastra/core/tools";
+import { Memory } from "@mastra/memory";
 import { models } from "../models";
 import { ASK_TUTOR_INSTRUCTIONS } from "../prompts/tutor";
 import { leafSuggestionSchema } from "../schemas";
@@ -22,4 +23,9 @@ export const askTutor = new Agent({
   instructions: ASK_TUTOR_INSTRUCTIONS,
   model: models.fast,
   tools: { suggestLeafLesson },
+  // One thread per lesson: questions are still there when you come back.
+  memory: new Memory({ options: { lastMessages: 20 } }),
 });
+
+export const ASK_RESOURCE_ID = "local-learner";
+export const askThreadId = (lessonId: string) => `ask-${lessonId}`;
