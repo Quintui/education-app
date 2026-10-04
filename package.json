@@ -12,6 +12,7 @@
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.83",
     "@ai-sdk/react": "^4.0.130",
     "@assistant-ui/ai-sdk": "^0.0.9",
     "@assistant-ui/react": "^0.15.23",
@@ -22,7 +23,6 @@
     "@mastra/core": "^1.74.0",
     "@mastra/libsql": "^1.25.0",
     "@mastra/memory": "^1.35.0",
-    "@openrouter/ai-sdk-provider": "^3.1.0",
     "ai": "^7.0.127",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",

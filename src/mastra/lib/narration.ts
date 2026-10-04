@@ -1,8 +1,16 @@
 const CUE_PATTERN = /\[\[([a-z0-9-]+)\]\]/gi;
+/** Single-bracket ElevenLabs audio tags like [curious]; cue markers use double brackets. */
+const AUDIO_TAG_PATTERN = /\[[^[\]]+\]\s*/g;
+
+/** Narration as plain text: no cue markers, no audio tags. For anything but the voice. */
+export function plainNarration(narration: string) {
+  return parseNarration(narration).text.replace(AUDIO_TAG_PATTERN, "").replace(/\s{2,}/g, " ").trim();
+}
 
 /**
- * Strips `[[cue]]` markers from narration and remembers the character
- * offset of each one, so audio timestamps can turn them into seconds.
+ * Strips `[[cue]]` markers from narration and remembers the character offset of
+ * each one, so audio timestamps can turn them into seconds. Audio tags stay in:
+ * the voice needs them, and ElevenLabs' alignment includes their characters.
  */
 export function parseNarration(raw: string) {
   const narration = raw.trim();

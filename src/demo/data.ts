@@ -1,6 +1,6 @@
 import type { CourseOutline, Diagnostic } from "@/mastra/schemas";
 
-// Hand-written content for demo mode (no OpenRouter key). It follows the black
+// Hand-written content for demo mode (LUMEN_DEMO=1). It follows the black
 // holes example so the whole flow can be shown and recorded without spending credits.
 
 export const DEMO_DIAGNOSTIC: Diagnostic = {

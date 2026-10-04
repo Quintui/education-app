@@ -3,12 +3,12 @@
 Name any topic. A quick knowledge check finds where you are, a personal course maps out the path, and every
 lesson becomes an animated, narrated explainer with notes, a quiz and a playground.
 
-**Stack:** Next.js 16 · assistant-ui · shadcn/ui (Base UI) · Mastra workflows · OpenRouter · ElevenLabs · GSAP
+**Stack:** Next.js 16 · assistant-ui · shadcn/ui (Base UI) · Mastra workflows · OpenAI · ElevenLabs · GSAP · SQLite
 
 ## Setup
 
 ```bash
-cp .env.example .env.local   # add OPENROUTER_API_KEY and ELEVENLABS_API_KEY (or leave empty for demo mode)
+cp .env.example .env.local   # add OPENAI_API_KEY and ELEVENLABS_API_KEY (or LUMEN_DEMO=1)
 npm install
 npm run dev                  # app on http://localhost:3000
 npm run studio               # Mastra Studio on http://localhost:4111
@@ -37,12 +37,15 @@ plan-lesson (Opus, from a brief: learner profile, course map, what earlier lesso
 └─ finalize-lesson
 ```
 
+- **Narration** uses ElevenLabs Eleven v4 with audio tags (`[curious]`, `[excited]`, `[whispers]`…) written by the
+  lesson planner, plus ellipses, dashes and CAPITALS for pacing. Tags are performed, never spoken, and v4's
+  timestamp alignment includes them, so `[[cue]]` markers still land animations on the exact word.
 - `src/app/api/course/route.ts` runs the knowledge check or, when the last message carries answers, the course workflow.
 - `src/app/api/lesson/route.ts` builds a lesson; the course page starts it when a lesson is opened.
 - `src/components/course/` renders every streamed state: knowledge check, course draft, knowledge tree, lesson builder.
 - `src/app/api/ask/route.ts` answers questions asked mid-lesson with the paused moment as context; the tutor can
   suggest growing the question into a new leaf lesson on the tree.
-- **Demo mode:** without `OPENROUTER_API_KEY`, `src/demo/streams.ts` replays the same data parts with realistic timing,
+- **Demo mode:** with `LUMEN_DEMO=1`, `src/demo/streams.ts` replays the same data parts with realistic timing,
   so the full UI can be developed and recorded without spending credits. Demo lessons use the fixture in `demo/lesson/`.
 - **Everything is local.** One SQLite file, `.data/lumen.db`, holds courses, lessons and progress (Drizzle,
   `src/mastra/db/`) and Mastra's own storage: workflow runs, traces and the Ask tutor's memory, so questions

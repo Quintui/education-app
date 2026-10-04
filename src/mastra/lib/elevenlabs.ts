@@ -6,6 +6,8 @@ const elevenlabs = () =>
   (client ??= new ElevenLabsClient({ apiKey: process.env.ELEVENLABS_API_KEY }));
 
 const VOICE_ID = process.env.ELEVENLABS_VOICE_ID ?? "JBFqnCBsd6RMkjVDRZzb";
+/** Eleven v4 follows audio tags like [curious] and [excited] for expressive delivery. */
+const MODEL_ID = process.env.ELEVENLABS_MODEL_ID ?? "eleven_v4";
 const MP3_BITRATE = 128_000;
 
 export async function narrate(
@@ -14,8 +16,10 @@ export async function narrate(
 ) {
   const res = await elevenlabs().textToSpeech.convertWithTimestamps(VOICE_ID, {
     text,
-    modelId: "eleven_multilingual_v2",
+    modelId: MODEL_ID,
     outputFormat: "mp3_44100_128",
+    // "Natural" stability: expressive enough for tags, steady enough for teaching.
+    voiceSettings: { stability: 0.5, similarityBoost: 0.75 },
     // Neighbouring text keeps intonation continuous across scene boundaries.
     previousText: context.previousText,
     nextText: context.nextText,

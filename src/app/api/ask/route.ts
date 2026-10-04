@@ -1,7 +1,8 @@
 import { handleChatStream } from "@mastra/ai-sdk";
 import { createUIMessageStreamResponse, type UIMessage } from "ai";
 import { z } from "zod";
-import { demoAskStream, isDemoMode } from "@/demo/streams";
+import { demoAskStream } from "@/demo/streams";
+import { isDemoMode, setupRequiredResponse } from "@/lib/env";
 import { mastra } from "@/mastra";
 import { ASK_RESOURCE_ID, askThreadId } from "@/mastra/agents/ask-tutor";
 import { buildAskContext } from "@/mastra/lib/ask";
@@ -16,6 +17,9 @@ const bodySchema = z.object({
 
 /** Questions asked while a lesson is paused, answered with that moment as context. */
 export async function POST(req: Request) {
+  const setup = setupRequiredResponse();
+  if (setup) return setup;
+
   const parsed = bodySchema.safeParse(await req.json());
   if (!parsed.success) return new Response("Invalid request", { status: 400 });
 

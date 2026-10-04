@@ -10,7 +10,7 @@ import {
   saveLesson,
   writeLessonFile,
 } from "../lib/store";
-import { extractCode, parseNarration, resolveCues } from "../lib/narration";
+import { extractCode, parseNarration, plainNarration, resolveCues } from "../lib/narration";
 import { NOTES_TASK, PLAYGROUND_TASK, QUIZ_TASK } from "../prompts/tutor";
 import {
   lessonContextSchema,
@@ -51,7 +51,7 @@ function reportMaterial(writer: StepWriter, lessonId: string, data: MaterialProg
 /** A compact description of the lesson that the tutor works from. */
 function lessonDigest(plan: LessonPlan) {
   const scenes = plan.scenes
-    .map((s) => `- ${s.title}: ${parseNarration(s.narration).text}`)
+    .map((s) => `- ${s.title}: ${plainNarration(s.narration)}`)
     .join("\n");
   return `Lesson: ${plan.title} (${plan.level})\nCore intuition: ${plan.coreIntuition}\n\nNarration by scene:\n${scenes}`;
 }
@@ -128,7 +128,7 @@ const animateScene = createStep({
     const brief = `Lesson: ${lessonTitle}
 Scene: ${scene.title}
 Goal: ${scene.goal}
-Narration (${duration.toFixed(1)}s spoken): "${parseNarration(scene.narration).text}"
+Narration (${duration.toFixed(1)}s spoken): "${plainNarration(scene.narration)}"
 Cue timings in seconds: ${JSON.stringify(cues)}
 Visual brief: ${scene.visual}
 Theme: ${JSON.stringify(styleGuide)}`;
@@ -159,7 +159,7 @@ Theme: ${JSON.stringify(styleGuide)}`;
       id: scene.id,
       title: scene.title,
       goal: scene.goal,
-      narration: parseNarration(scene.narration).text,
+      narration: plainNarration(scene.narration),
       duration,
       cues,
     };
@@ -221,7 +221,8 @@ const videoWorkflow = createWorkflow({
 })
   .map(async ({ inputData }) => {
     const { lessonId, plan, styleGuide } = inputData;
-    const spoken = plan.scenes.map((scene) => parseNarration(scene.narration).text);
+    // Neighbouring narration keeps the voice continuous across scenes.
+    const spoken = plan.scenes.map((scene) => plainNarration(scene.narration));
     return plan.scenes.map((scene, i) => ({
       lessonId,
       lessonTitle: plan.title,

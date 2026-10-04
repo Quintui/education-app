@@ -25,10 +25,9 @@ import type {
 import { DEMO_COURSE, DEMO_DIAGNOSTIC } from "./data";
 
 /**
- * Without an OpenRouter key the app runs in demo mode: these streams replay
- * the exact data parts the real Mastra workflows emit, with realistic timing.
+ * Demo mode (LUMEN_DEMO=1): these streams replay the exact data parts the real
+ * Mastra workflows emit, with realistic timing.
  */
-export const isDemoMode = () => !process.env.OPENROUTER_API_KEY;
 
 const FIXTURE_DIR = path.join(process.cwd(), "demo", "lesson");
 

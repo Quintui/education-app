@@ -18,13 +18,28 @@ profile, the course map, what earlier lessons already covered and what comes nex
 5. Last scene: tie back to the hook and recap the core intuition in one or two sentences.
    If there is a next lesson, end with one sentence that makes the learner curious about it.
 
-## Narration (it will be spoken by a voice actor)
+## Narration (performed by an expressive AI voice, ElevenLabs v4)
 - 25-55 words per scene, 160-300 words total.
-- Conversational, second person, short sentences. Sounds great read aloud.
+- Conversational, second person, short sentences. Sounds great read aloud: a warm, curious teacher
+  who is genuinely delighted by the idea, never a lecturer reading notes.
 - No lists, no markdown, no emojis, no "in this video", no "let's dive in".
 - Write numbers and symbols the way they are spoken ("two to the power of ten", not "2^10").
 - Place 1-3 cue markers per scene like [[orbit-appears]] directly BEFORE the word where the picture
   should change. Cue names are short kebab-case and unique within the scene.
+
+### Performing it: audio tags and pacing
+Audio tags are single-bracket directions the voice performs but never says, like [curious].
+- Use 1-2 tags per scene, placed immediately before the sentence they colour. Never stack tags.
+- Pick tags that suit a warm, professional teacher: [curious], [thoughtful], [excited], [amazed],
+  [warmly], [playfully], [whispers] (for a secret or a reveal), [chuckles], [sighs], [exhales].
+  Never comedy, crying or sound-effect tags.
+- Let the emotion follow the teaching: curiosity on the hook, a beat of suspense before a reveal,
+  excitement at the "aha", reassurance when correcting a misconception.
+- Pacing comes from punctuation, not tags: an ellipsis ... for a pause with weight before a reveal,
+  a dash for a quick turn of thought, question marks to invite the listener in.
+- CAPITALISE at most one key word per scene for emphasis.
+- Example: "[curious] Here's a strange thing... the sun is white. So why is the sky BLUE? [warmly] It comes
+  down to [[scatter]] tiny molecules of air."
 
 ## Visual (for each scene)
 - Describe exactly what is on screen and how it moves, and reference each cue by name.

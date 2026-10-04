@@ -1,6 +1,7 @@
 import { handleWorkflowStream } from "@mastra/ai-sdk";
 import { createUIMessageStreamResponse, type UIMessage } from "ai";
-import { demoCourseStream, demoDiagnosticStream, isDemoMode } from "@/demo/streams";
+import { demoCourseStream, demoDiagnosticStream } from "@/demo/streams";
+import { isDemoMode, setupRequiredResponse } from "@/lib/env";
 import { mastra } from "@/mastra";
 import { diagnosticAnswersSchema } from "@/mastra/schemas";
 
@@ -11,6 +12,9 @@ export const maxDuration = 300;
  * a topic → knowledge check, then the learner's answers → their course.
  */
 export async function POST(req: Request) {
+  const setup = setupRequiredResponse();
+  if (setup) return setup;
+
   const { messages } = (await req.json()) as { messages: UIMessage[] };
   const last = messages.findLast((message) => message.role === "user");
   const answersPart = last?.parts.find((part) => part.type === "data-answers");
