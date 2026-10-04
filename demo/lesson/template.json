@@ -1,0 +1,121 @@
+{
+  "level": "beginner",
+  "video": {
+    "duration": 34.28,
+    "hasMusic": false,
+    "scenes": [
+      {
+        "id": "scene-1",
+        "title": "The puzzle",
+        "goal": "Light seemed to break its own rules",
+        "duration": 10.337,
+        "cues": {
+          "stars-shift": 7.28
+        },
+        "start": 0.0
+      },
+      {
+        "id": "scene-2",
+        "title": "Space can bend",
+        "goal": "Mass curves the space around it",
+        "duration": 7.984,
+        "cues": {
+          "grid-bends": 3.61
+        },
+        "start": 10.337
+      },
+      {
+        "id": "scene-3",
+        "title": "The straightest path",
+        "goal": "Light follows curved space",
+        "duration": 8.77,
+        "cues": {
+          "ray-curves": 3.98
+        },
+        "start": 18.321
+      },
+      {
+        "id": "scene-4",
+        "title": "Too close to escape",
+        "goal": "Enough mass traps light",
+        "duration": 7.189,
+        "cues": {
+          "horizon": 3.34
+        },
+        "start": 27.091
+      }
+    ]
+  },
+  "notes": {
+    "summary": "Mass curves the space around it. Light always follows the straightest possible path, so when space is curved, the light's path curves too. With enough mass packed tightly enough, nearby light curves in and cannot get back out.",
+    "keyIdeas": [
+      {
+        "title": "Stars in the wrong place",
+        "explanation": "During the 1919 eclipse, stars near the sun appeared shifted: their light had bent on the way to us."
+      },
+      {
+        "title": "Mass curves space",
+        "explanation": "A heavy object curves the space around it, like a ball sinking into a trampoline."
+      },
+      {
+        "title": "Light follows the curve",
+        "explanation": "Nothing pushes the light. It takes the straightest path available, and that path is curved."
+      },
+      {
+        "title": "The point of no return",
+        "explanation": "Pack enough mass into a small space and nearby light can no longer climb out."
+      }
+    ],
+    "keyTerms": [
+      {
+        "term": "Spacetime",
+        "definition": "Space and time treated as one fabric that mass can curve."
+      },
+      {
+        "term": "Gravitational lensing",
+        "definition": "Light bending around a massive object, shifting where things appear."
+      },
+      {
+        "term": "Geodesic",
+        "definition": "The straightest possible path through curved space."
+      }
+    ],
+    "analogy": "Like a marble rolling across a trampoline with a bowling ball in the middle: nobody pushes the marble sideways, the surface itself guides it."
+  },
+  "quiz": [
+    {
+      "question": "Why did stars near the sun appear in the wrong place in 1919?",
+      "options": [
+        "The sun's light hid their real position",
+        "Their light bent through curved space",
+        "The telescope lenses were distorted",
+        "The stars actually moved"
+      ],
+      "correctIndex": 1,
+      "explanation": "The sun's mass curves space, so starlight passing close to it follows a curved path."
+    },
+    {
+      "question": "What would happen to the bending if the sun were twice as heavy?",
+      "options": [
+        "Less bending",
+        "No change",
+        "More bending",
+        "The light would stop"
+      ],
+      "correctIndex": 2,
+      "explanation": "More mass curves space more strongly, so light bends more."
+    },
+    {
+      "question": "What pushes light off its straight course near a star?",
+      "options": [
+        "Nothing: the space it travels through is curved",
+        "The star's magnetic field",
+        "Solar wind",
+        "The light slows down"
+      ],
+      "correctIndex": 0,
+      "explanation": "Light follows the straightest path, and in curved space that path is curved."
+    }
+  ],
+  "hasPlayground": true
+}
