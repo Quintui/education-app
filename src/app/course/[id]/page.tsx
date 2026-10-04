@@ -28,7 +28,13 @@ export default async function CoursePage({ params, searchParams }: PageProps<"/c
       <main className="mx-auto grid w-full max-w-7xl gap-6 px-4 pt-2 pb-16 sm:px-6 lg:grid-cols-[300px_minmax(0,1fr)]">
         <CourseMap course={course} builtIds={[...built.keys()]} currentId={nodeId} />
         {/* Keyed by lesson so switching lessons starts fresh (and starts building if needed). */}
-        <LessonPanel key={nodeId} course={course} nodeId={nodeId} lesson={built.get(nodeId) ?? null} />
+        <LessonPanel
+          key={nodeId}
+          course={course}
+          nodeId={nodeId}
+          lesson={built.get(nodeId) ?? null}
+          builtIds={new Set(built.keys())}
+        />
       </main>
     </div>
   );

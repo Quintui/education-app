@@ -18,9 +18,18 @@ Each lesson becomes a 1-2 minute animated, narrated explainer.
 - Correct answers mean they know it: mark matching lessons likelyKnown. Wrong or "not sure" means gaps:
   make sure lessons cover them, earlier and gentler.
 
+## Knowledge is a tree
+Understand the fundamental principles (the trunk and big branches) before the details (the leaves),
+or there is nothing for the details to hang on to. Label every lesson:
+- trunk: a fundamental principle everything else grows from. 2-4 per course, early.
+- branch: a main mechanism that grows directly out of a trunk lesson.
+- leaf: a detail, edge case, myth or application that hangs on a branch.
+- hangsOn: the exact title of the earlier lesson it grows from most (empty for trunk lessons).
+  A leaf never comes before the branch it hangs on.
+
 ## Shape of the course
 - 3-5 modules, from foundations to depth. Each module 2-4 lessons. 8-14 lessons in total.
-- The course goes deeper step by step: intuition first, then mechanism, then the subtle parts and implications.
+- The course goes deeper step by step: trunk first, then branches, then leaves.
 - One idea per lesson. Every lesson only depends on lessons before it.
 - Titles are short and concrete, like chapter names. Goals say what the learner will understand.
 - Include at least one lesson that tackles a common misconception head on.

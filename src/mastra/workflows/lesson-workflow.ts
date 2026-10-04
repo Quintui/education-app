@@ -155,7 +155,14 @@ Theme: ${JSON.stringify(styleGuide)}`;
     await writeLessonFile(lessonId, `scenes/${scene.id}.js`, code);
     await reportScene(writer, lessonId, scene, "ready");
 
-    return { id: scene.id, title: scene.title, goal: scene.goal, duration, cues };
+    return {
+      id: scene.id,
+      title: scene.title,
+      goal: scene.goal,
+      narration: parseNarration(scene.narration).text,
+      duration,
+      cues,
+    };
   },
 });
 

@@ -12,7 +12,8 @@
         "cues": {
           "stars-shift": 7.28
         },
-        "start": 0.0
+        "start": 0.0,
+        "narration": "Light always travels in straight lines. Or does it? In nineteen nineteen, astronomers photographed a solar eclipse, and the stars close to the sun showed up in the wrong place."
       },
       {
         "id": "scene-2",
@@ -22,7 +23,8 @@
         "cues": {
           "grid-bends": 3.61
         },
-        "start": 10.337
+        "start": 10.337,
+        "narration": "Here is the trick. Space is not an empty stage. A heavy mass curves the space around it, like a bowling ball sinking into a trampoline."
       },
       {
         "id": "scene-3",
@@ -32,7 +34,8 @@
         "cues": {
           "ray-curves": 3.98
         },
-        "start": 18.321
+        "start": 18.321,
+        "narration": "Light still takes the straightest path it can. But on curved space, that path bends. Nothing pushes the light. The space it travels through is curved."
       },
       {
         "id": "scene-4",
@@ -42,7 +45,8 @@
         "cues": {
           "horizon": 3.34
         },
-        "start": 27.091
+        "start": 27.091,
+        "narration": "So gravity bends light. Now imagine something so dense that light passing close to it curves inward and can never climb back out."
       }
     ]
   },

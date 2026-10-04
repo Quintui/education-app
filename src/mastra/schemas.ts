@@ -61,6 +61,8 @@ export const videoSceneSchema = z.object({
   id: z.string(),
   title: z.string(),
   goal: z.string(),
+  /** Spoken text, kept so questions during the lesson know what was just said. */
+  narration: z.string().default(""),
   duration: z.number(),
   cues: z.record(z.string(), z.number()),
 });
@@ -154,6 +156,13 @@ export const diagnosticAnswersSchema = z.object({
 
 // ── Course ───────────────────────────────────────────────────────────────
 
+/**
+ * Knowledge as a tree: trunk lessons are the fundamental principles, branches the
+ * main mechanisms that grow from them, leaves the details that hang on a branch.
+ */
+export const LESSON_DEPTHS = ["trunk", "branch", "leaf"] as const;
+export const lessonDepthSchema = z.enum(LESSON_DEPTHS);
+
 export const courseOutlineSchema = z.object({
   title: z.string().describe("Course title, max 6 words"),
   tagline: z.string().describe("One sentence promise of what the learner will understand"),
@@ -174,12 +183,28 @@ export const courseOutlineSchema = z.object({
               likelyKnown: z
                 .boolean()
                 .describe("true if the knowledge check shows the learner already knows this"),
+              depth: lessonDepthSchema.describe(
+                "trunk = fundamental principle, branch = main mechanism, leaf = detail or edge case",
+              ),
+              hangsOn: z
+                .string()
+                .describe("Exact title of the earlier lesson this one builds on most. Empty for trunk lessons"),
             }),
           )
           .describe("2-4 lessons, each going one step deeper"),
       }),
     )
     .describe("3-5 modules from foundations to depth"),
+});
+
+const courseLessonSchema = courseOutlineSchema.shape.modules.element.shape.lessons.element.extend({
+  id: z.string(),
+  depth: lessonDepthSchema.default("branch"),
+  hangsOn: z.string().default(""),
+  /** Id of the lesson this one hangs on. */
+  parentId: z.string().optional(),
+  /** Leaves can grow from a question the learner asked during a lesson. */
+  question: z.string().optional(),
 });
 
 export const courseSchema = courseOutlineSchema.extend({
@@ -189,9 +214,7 @@ export const courseSchema = courseOutlineSchema.extend({
   modules: z.array(
     courseOutlineSchema.shape.modules.element.extend({
       id: z.string(),
-      lessons: z.array(
-        courseOutlineSchema.shape.modules.element.shape.lessons.element.extend({ id: z.string() }),
-      ),
+      lessons: z.array(courseLessonSchema),
     }),
   ),
 });
@@ -202,6 +225,14 @@ export type LearnerLevel = DiagnosticAnswers["level"];
 export type CourseOutline = z.infer<typeof courseOutlineSchema>;
 export type Course = z.infer<typeof courseSchema>;
 export type CourseLesson = Course["modules"][number]["lessons"][number];
+export type LessonDepth = z.infer<typeof lessonDepthSchema>;
+
+/** What the tutor suggests when a question deserves its own lesson. */
+export const leafSuggestionSchema = z.object({
+  title: z.string().describe("Short lesson title, max 6 words"),
+  goal: z.string().describe("What the learner will understand after it"),
+});
+export type LeafSuggestion = z.infer<typeof leafSuggestionSchema>;
 
 /** Recursively optional, the shape of structured output while it streams. */
 export type DeepPartial<T> = T extends (infer U)[]

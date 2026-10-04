@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { AnimatePresence, motion } from "motion/react";
-import { ArrowRightIcon, CircleCheckIcon, CompassIcon } from "lucide-react";
+import { ArrowRightIcon, CircleCheckIcon, CompassIcon, LeafIcon } from "lucide-react";
 import type { DataMessagePartProps } from "@assistant-ui/react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Caret, StreamStatus } from "@/components/streaming";
 import { appear, appearSmall, springy } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 import type { CourseOutline, CoursePart, DeepPartial } from "@/mastra/schemas";
 
 const MINUTES_PER_LESSON = 2;
@@ -136,8 +137,22 @@ export function CourseDraft({ data }: DataMessagePartProps<CoursePart>) {
                             transition={springy}
                             className="flex items-center gap-2.5 text-sm"
                           >
-                            <span className="border-primary/50 size-2 shrink-0 rounded-full border-2" />
-                            <span className={lesson?.likelyKnown ? "text-muted-foreground" : undefined}>
+                            {lesson?.depth === "leaf" ? (
+                              <LeafIcon className="text-primary/60 size-3 shrink-0" />
+                            ) : (
+                              <span
+                                className={cn(
+                                  "border-primary/50 size-2 shrink-0 rounded-full border-2",
+                                  lesson?.depth === "trunk" && "bg-primary border-primary",
+                                )}
+                              />
+                            )}
+                            <span
+                              className={cn(
+                                lesson?.likelyKnown && "text-muted-foreground",
+                                lesson?.depth === "trunk" && "font-medium",
+                              )}
+                            >
                               {lesson?.title}
                             </span>
                             {lesson?.likelyKnown && (

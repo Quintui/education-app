@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { createUIMessageStream, type UIMessageStreamWriter } from "ai";
+import { createUIMessageStream, type UIMessage, type UIMessageStreamWriter } from "ai";
+import { sceneAt } from "@/mastra/lib/ask";
 import { withIds } from "@/mastra/lib/course";
 import {
   getCourse,
@@ -275,6 +276,49 @@ export function demoLessonStream({ courseId, nodeId }: { courseId: string; nodeI
       writer.write({ type: "data-lesson", id: lessonId, data: lesson });
       steps["finalize-lesson"] = { status: "success" };
       snapshot("success");
+    },
+  });
+}
+
+// ── Questions during a lesson ────────────────────────────────────────────
+
+const DEEP_QUESTION = /\b(why|how|what if|what happens)\b/i;
+
+export function demoAskStream({ lesson, time, messages }: { lesson: Lesson; time: number; messages: UIMessage[] }) {
+  return createUIMessageStream({
+    execute: async ({ writer }: { writer: Writer }) => {
+      const question =
+        messages
+          .findLast((m) => m.role === "user")
+          ?.parts.map((p) => (p.type === "text" ? p.text : ""))
+          .join(" ")
+          .trim() ?? "";
+      const scene = sceneAt(lesson, time);
+      const goal = scene.goal.replace(/\.?$/, ".");
+      const answer =
+        `Right where you paused, in “${scene.title}”, the key idea is that ${goal.charAt(0).toLowerCase()}${goal.slice(1)} ` +
+        `Here is another way to see it: ${lesson.notes.analogy}`;
+
+      await sleep(900);
+      const id = crypto.randomUUID();
+      writer.write({ type: "text-start", id });
+      for (const word of answer.split(" ")) {
+        writer.write({ type: "text-delta", id, delta: `${word} ` });
+        await sleep(28);
+      }
+      writer.write({ type: "text-end", id });
+
+      // "Why" and "how" questions often deserve their own lesson on the tree.
+      if (DEEP_QUESTION.test(question)) {
+        await sleep(500);
+        const toolCallId = crypto.randomUUID();
+        const suggestion = {
+          title: question.replace(/\?+$/, "").split(" ").slice(0, 6).join(" "),
+          goal: `A short lesson that answers: ${question}`,
+        };
+        writer.write({ type: "tool-input-available", toolCallId, toolName: "suggestLeafLesson", input: suggestion });
+        writer.write({ type: "tool-output-available", toolCallId, output: suggestion });
+      }
     },
   });
 }

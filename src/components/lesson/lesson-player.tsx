@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { PauseIcon, PlayIcon } from "lucide-react";
+import { useEffect, useImperativeHandle, useRef, useState, type Ref } from "react";
+import { MessageCircleQuestionIcon, PauseIcon, PlayIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { formatTime } from "@/lib/format";
@@ -16,7 +16,16 @@ function seekStage(frame: HTMLIFrameElement | null, time: number) {
   frame?.contentWindow?.postMessage({ type: "seek", time }, "*");
 }
 
-export function LessonPlayer({ lesson }: { lesson: Lesson }) {
+export type LessonPlayerHandle = { play: () => void };
+
+type LessonPlayerProps = {
+  lesson: Lesson;
+  /** Pauses the lesson and hands over the moment the learner wants to ask about. */
+  onAsk?: (time: number) => void;
+  ref?: Ref<LessonPlayerHandle>;
+};
+
+export function LessonPlayer({ lesson, onAsk, ref }: LessonPlayerProps) {
   const { id, video } = lesson;
   const frameRef = useRef<HTMLIFrameElement>(null);
   const voiceRef = useRef<HTMLAudioElement>(null);
@@ -55,6 +64,19 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
     syncNow();
     return () => window.removeEventListener("message", onMessage);
   }, []);
+
+  useImperativeHandle(ref, () => ({
+    play: () => {
+      setStarted(true);
+      void voiceRef.current?.play();
+    },
+  }));
+
+  function ask() {
+    const voice = voiceRef.current;
+    voice?.pause();
+    onAsk?.(voice?.currentTime ?? 0);
+  }
 
   function togglePlay() {
     const voice = voiceRef.current;
@@ -116,6 +138,12 @@ export function LessonPlayer({ lesson }: { lesson: Lesson }) {
         <span className="text-muted-foreground shrink-0 text-xs tabular-nums">
           {formatTime(time)} / {formatTime(video.duration)}
         </span>
+        {onAsk && (
+          <Button variant="outline" onClick={ask}>
+            <MessageCircleQuestionIcon data-icon="inline-start" />
+            Ask
+          </Button>
+        )}
       </div>
 
       <ol className="flex flex-wrap gap-1.5" aria-label="Chapters">

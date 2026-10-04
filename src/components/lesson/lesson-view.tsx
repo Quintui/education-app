@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { motion } from "motion/react";
 import { BookOpenIcon, CircleHelpIcon, ShapesIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -7,8 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatTime } from "@/lib/format";
 import { EASE_OUT } from "@/lib/motion";
 import type { Lesson } from "@/mastra/schemas";
+import { AskTutor } from "./ask-tutor";
 import { LessonNotes } from "./lesson-notes";
-import { LessonPlayer } from "./lesson-player";
+import { LessonPlayer, type LessonPlayerHandle } from "./lesson-player";
 import { LessonQuiz } from "./lesson-quiz";
 
 /** Header, player and materials arrive one after another. */
@@ -19,6 +21,10 @@ const section = (order: number) => ({
 });
 
 export function LessonView({ lesson }: { lesson: Lesson }) {
+  const playerRef = useRef<LessonPlayerHandle>(null);
+  // The moment the learner paused to ask about, or null while just watching.
+  const [askAt, setAskAt] = useState<number | null>(null);
+
   return (
     <article className="flex flex-col gap-6">
       <motion.header {...section(0)} className="flex flex-col gap-2">
@@ -34,8 +40,17 @@ export function LessonView({ lesson }: { lesson: Lesson }) {
         <p className="text-muted-foreground text-lg text-pretty">{lesson.hook}</p>
       </motion.header>
 
-      <motion.div {...section(1)}>
-        <LessonPlayer lesson={lesson} />
+      <motion.div {...section(1)} className="flex flex-col gap-4">
+        <LessonPlayer ref={playerRef} lesson={lesson} onAsk={setAskAt} />
+        <AskTutor
+          lesson={lesson}
+          time={askAt}
+          onClose={() => setAskAt(null)}
+          onResume={() => {
+            setAskAt(null);
+            playerRef.current?.play();
+          }}
+        />
       </motion.div>
 
       <motion.div {...section(2)}>
