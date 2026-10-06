@@ -5,6 +5,7 @@ import { MessageCircleQuestionIcon, PauseIcon, PlayIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { SandboxFrame } from "@/components/sandbox-frame";
 import { formatTime } from "@/lib/format";
 import type { Lesson } from "@/mastra/schemas";
 
@@ -102,11 +103,10 @@ export function LessonPlayer({ lesson, onAsk, questionCount = 0, onEnded, ref }:
   return (
     <div className="flex flex-col gap-3">
       <div className="bg-card relative aspect-video overflow-hidden rounded-2xl border shadow-sm">
-        <iframe
+        <SandboxFrame
           ref={frameRef}
           title={`${lesson.title} animation`}
           src={`/api/lessons/${id}/stage`}
-          sandbox="allow-scripts"
           className="absolute inset-0 size-full"
         />
         {!started && (

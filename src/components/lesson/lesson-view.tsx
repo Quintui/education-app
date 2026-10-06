@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import type { UIMessage } from "ai";
 import { motion } from "motion/react";
 import { BookOpenIcon, CircleHelpIcon, ShapesIcon } from "lucide-react";
+import { SandboxFrame } from "@/components/sandbox-frame";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatTime } from "@/lib/format";
@@ -105,10 +106,9 @@ export function LessonView({ lesson, askHistory }: LessonViewProps) {
           </TabsContent>
           {lesson.hasPlayground && (
             <TabsContent value="playground">
-              <iframe
+              <SandboxFrame
                 title={`${lesson.title} playground`}
                 src={`/api/lessons/${lesson.id}/playground`}
-                sandbox="allow-scripts"
                 className="bg-card h-130 w-full rounded-2xl border shadow-sm"
               />
             </TabsContent>

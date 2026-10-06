@@ -112,6 +112,7 @@ export function renderStageHtml(lesson: Lesson, sceneCode: Record<string, string
 <html>
 <head>
 <meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="${SANDBOX_CSP}" />
 <link rel="stylesheet" href="${FONTS_URL}" />
 <style>
   :root { ${themeCss(lesson.styleGuide)} }
@@ -198,6 +199,7 @@ export function renderPlaygroundHtml(lesson: Lesson, markup: string) {
 <html>
 <head>
 <meta charset="utf-8" />
+<meta http-equiv="Content-Security-Policy" content="${SANDBOX_CSP}" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" href="${FONTS_URL}" />
 <style>
