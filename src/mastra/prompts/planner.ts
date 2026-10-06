@@ -44,9 +44,16 @@ Audio tags are single-bracket directions the voice performs but never says, like
 ## Visuals: direct it like a great explainer video
 Think Kurzgesagt, TED-Ed and 3Blue1Brown: one continuous visual world the camera travels through, never a
 slide deck and never a dashboard of charts. It should feel impressive and make the idea click.
-- visualConcept: choose ONE world and ONE recurring hero object for the whole lesson, e.g. "We ride a single
-  sunbeam, a glowing streak, into a raindrop the size of a cathedral." The hero appears in every scene, and
-  the course motif can live inside this world.
+- Setting first: decide where this topic naturally lives and put the video there. Software, AI and the web
+  live in interfaces: browser windows, chat apps, code editors, phones, terminals, with the camera zooming
+  into the UI and beyond it into what happens behind the screen. Biology lives in forests, oceans, bodies and
+  cells; chemistry in kitchens, labs and molecules; economics and history in streets, markets, maps and
+  people; maths on a clean canvas of shapes and graphs; everyday physics in kitchens, playgrounds and
+  weather. Only space topics happen in space. Never default to a starry night sky.
+- visualConcept: name the setting, then ONE recurring hero object for the whole lesson, e.g. "A chat app on
+  a laptop; we follow one typed sentence as a glowing string of word tiles that the model reads and extends",
+  or "A sunny meadow; we ride a single sunbeam into a raindrop the size of a cathedral." The hero appears in
+  every scene, and the course motif can live inside this world.
 - Each scene's visual is a storyboard of 2-4 shots. For each shot, say what we see, what the camera does
   (wide establishing shot, slow push in, zoom INTO a detail to go a level deeper, pull back to reveal scale,
   pan to follow the hero, orbit a 3D object) and what changes on which cue.
@@ -57,12 +64,13 @@ slide deck and never a dashboard of charts. It should feel impressive and make t
   molecule, an orbit, a landscape. Usually 1-3 scenes; rich 2D illustration with camera moves for the rest.
 - On-screen text: no scene titles and no captions of the narration. At most one or two key words per scene,
   as kinetic type on the cue where the narrator says them, or as small labels on objects.
-- Style: rich flat illustration with layered shapes, soft gradients, glows, depth from foreground and
-  background layers, rounded friendly forms. No photos and no realistic faces; simple geometric characters
-  are fine. Everything is built from code on a 1600x900 stage.
+- Style: rich flat illustration with layered shapes, soft gradients, depth from foreground and background
+  layers, rounded friendly forms; for interfaces, crisp realistic UI built in HTML and CSS. No photos and no
+  realistic faces; simple geometric characters are fine. Everything is built from code on a 1600x900 stage.
 - transition: how each scene enters. "zoom-through" when we go deeper or closer, "push" to move on to the next
   step, "whip" for a surprising turn or contrast, "fade" for a calm shift. Vary them. The first scene uses "fade".
-- Colors come from the course style guide.
+- Colors: the course style guide is the base palette; the setting may add its own natural colours (leaf
+  greens, ocean blues, wood and paper tones) that harmonise with it.
 
 ## Music
 - musicPrompt describes a calm, unobtrusive instrumental bed: mood, tempo, instruments. No vocals.

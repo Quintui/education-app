@@ -59,10 +59,17 @@ function makeKit(root, world, hud) {
     world.style.transform = "translate(" + tx + "px," + ty + "px) rotate(" + cam.rotate + "deg) scale(" + z + ")";
   });
 
-  function camera(tl, { x = cam.x, y = cam.y, zoom = cam.zoom, rotate = 0, at = 0, duration = 1.6, ease = "power2.inOut" } = {}) {
+  // Where the last planned move ends, so omitted values continue from there
+  // (tweens only run later, so cam itself still holds the opening framing).
+  const planned = { ...cam };
+  function camera(tl, { x = planned.x, y = planned.y, zoom = planned.zoom, rotate = planned.rotate, at = 0, duration = 1.6, ease = "power2.inOut" } = {}) {
+    Object.assign(planned, { x, y, zoom, rotate });
     return tl.to(cam, { x, y, zoom, rotate, duration, ease }, at);
   }
-  camera.start = ({ x = cam.x, y = cam.y, zoom = 1, rotate = 0 } = {}) => Object.assign(cam, { x, y, zoom, rotate });
+  camera.start = ({ x = cam.x, y = cam.y, zoom = 1, rotate = 0 } = {}) => {
+    Object.assign(cam, { x, y, zoom, rotate });
+    Object.assign(planned, cam);
+  };
 
   return {
     world,
@@ -89,12 +96,13 @@ function makeKit(root, world, hud) {
       node.innerHTML = markup;
       return node;
     },
-    words(content, { className = "k-title", parent = hud, x = 800, y = 450, width = 1200, align = "center" } = {}) {
+    words(content, { className = "k-title", parent = hud, x = 800, y = 450, width = 1200, align = "center", color } = {}) {
       const node = el("div", { class: "k-html " + className }, parent);
       Object.assign(node.style, {
         left: x - (align === "center" ? width / 2 : 0) + "px", top: y + "px", width: width + "px",
         textAlign: align, transform: "translateY(-50%)",
       });
+      if (color) node.style.color = color;
       node.words = content.split(/\\s+/).filter(Boolean).map((word) => {
         const span = el("span", { class: "k-word", text: word }, node);
         node.appendChild(document.createTextNode(" "));
@@ -189,7 +197,11 @@ Layers (the frame is ${STAGE_WIDTH}x${STAGE_HEIGHT}):
 - kit.world: the 2D world the camera moves over. It may be much larger than the frame: draw at any
   coordinates (negative or beyond ${STAGE_WIDTH}x${STAGE_HEIGHT}) and fly the camera there. Default parent for kit.svg/el/html.
 - kit.hud: a layer above the world that the camera does not move. Use it for kinetic words. Default for kit.words.
-- A three.js canvas (kit.three) sits behind the world, so 2D drawn in the world or HUD overlays the 3D.
+- A three.js canvas (kit.three) sits behind the world, so 2D drawn in the world or HUD overlays the 3D. In a 3D
+  scene, paint the backdrop with root.style.background (a CSS gradient), because a full-bleed shape in the
+  world would cover the 3D.
+- Interfaces are built with HTML and CSS: kit.html for markup, kit.el("style", { text: css }) for styles. Prefix
+  every class name with something unique to the scene (e.g. .s4-) so styles never leak into other scenes.
 
 Camera (2D world):
 - kit.camera.start({ x, y, zoom = 1, rotate = 0 }) -> the opening framing. (x, y) is the world point at the
@@ -210,7 +222,7 @@ Drawing:
 
 Motion:
 - kit.draw(tl, pathOrShape, { at, duration, ease }) -> a stroke being drawn.
-- kit.words(text, { className = "k-title", parent = kit.hud, x = 800, y = 450, width = 1200, align = "center" })
+- kit.words(text, { className = "k-title", parent = kit.hud, x = 800, y = 450, width = 1200, align = "center", color })
   -> a text block whose .words array holds one <span> per word, for kinetic type:
   tl.from(block.words, { y: 60, opacity: 0, duration: 0.5, stagger: 0.08, ease: "back.out(2)" }, at).
 - kit.float(tl, target, { x = 0, y = 14, rotate = 0, period = 3, from = 0, to = duration - 0.3 }) -> gentle
@@ -267,7 +279,8 @@ export function renderStageHtml(lesson: Lesson, sceneCode: Record<string, string
   .hud { position: absolute; inset: 0; pointer-events: none; }
   .k-three { position: absolute; inset: 0; width: 100%; height: 100%; }
   .k-html { position: absolute; }
-  .k-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 88px; font-weight: 700; line-height: 1.05; letter-spacing: -0.02em; }
+  .k-title { font-family: "Bricolage Grotesque", sans-serif; font-size: 88px; font-weight: 700; line-height: 1.05; letter-spacing: -0.02em;
+    text-shadow: 0 2px 18px rgba(0, 0, 0, 0.18); }
   .k-body { font-size: 36px; line-height: 1.35; color: var(--ink); }
   .k-chip { display: inline-block; padding: 10px 22px; border-radius: 999px; background: var(--surface);
     color: var(--ink); font-size: 28px; font-weight: 600; }

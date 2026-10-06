@@ -143,9 +143,7 @@ Storyboard: ${scene.visual}
 Theme: ${JSON.stringify(styleGuide)}`;
 
     const animator = mastra.getAgent("sceneAnimator");
-    // Rich scenes are long programs; leave room so the code is never cut off.
-    const options = { modelSettings: { maxOutputTokens: 16000 } };
-    const first = await animator.generate(brief, options);
+    const first = await animator.generate(brief);
     let code = extractCode(first.text, "js|javascript");
 
     const error = syntaxError(code);
@@ -157,7 +155,7 @@ Theme: ${JSON.stringify(styleGuide)}`;
           role: "user",
           content: `That code throws a SyntaxError: ${error}. Return the corrected function body.`,
         },
-      ], options);
+      ]);
       code = extractCode(retry.text, "js|javascript");
       // Still broken: ship an empty scene, the player shows a titled fallback.
       if (syntaxError(code)) code = "";

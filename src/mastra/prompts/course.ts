@@ -35,8 +35,11 @@ or there is nothing for the details to hang on to. Label every lesson:
 - Include at least one lesson that tackles a common misconception head on.
 
 ## Style guide (shared by every lesson's animations)
-- A cohesive palette that fits the topic. Hex colors only. ink must be very readable on background;
-  primary, secondary and accent must stand out on background and differ from each other.
-- Prefer a calm dark or soft light background; avoid pure black or pure white.
+- The palette comes from the world the topic lives in, not from a default look. A forest topic gets leafy
+  greens and warm sunlight, the ocean gets deep teals, cooking gets warm kitchen tones, software and AI get a
+  clean light interface look (soft off-white with crisp UI colours), history gets parchment and ink, and
+  only space topics get a night sky. Light backgrounds are as welcome as dark ones.
+- Hex colors only. ink must be very readable on background; primary, secondary and accent must stand out
+  on background and differ from each other. Avoid pure black or pure white.
 - motif: one recurring visual element that ties all lessons together.
 `.trim();

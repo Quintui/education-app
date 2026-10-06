@@ -1,5 +1,5 @@
 import { Agent } from "@mastra/core/agent";
-import { model } from "../models";
+import { animatorModel, model } from "../models";
 import { ANIMATOR_INSTRUCTIONS } from "../prompts/animator";
 import { COURSE_PLANNER_INSTRUCTIONS } from "../prompts/course";
 import { PLANNER_INSTRUCTIONS } from "../prompts/planner";
@@ -23,7 +23,7 @@ export const sceneAnimator = new Agent({
   id: "scene-animator",
   name: "Scene Animator",
   instructions: ANIMATOR_INSTRUCTIONS,
-  model,
+  model: animatorModel,
 });
 
 export const tutor = new Agent({

@@ -17,8 +17,8 @@ npm run db:studio            # browse the local SQLite database
 
 ## How it works
 
-Three Mastra workflows, each streamed to the UI as typed data parts. Every agent uses Claude Sonnet 5.5
-through OpenRouter with medium reasoning effort.
+Three Mastra workflows, each streamed to the UI as typed data parts. Every agent uses GPT-6.1 Sol
+through OpenRouter with high reasoning effort.
 
 | Workflow | Input | Streams |
 | --- | --- | --- |
