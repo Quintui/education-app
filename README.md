@@ -7,7 +7,9 @@ lesson becomes an animated, narrated explainer with notes, a quiz and a playgrou
 
 ## Watch: how Lumen works
 
-[![How Lumen works: a 7-minute narrated explainer](docs/how-lumen-works.jpg)](docs/how-lumen-works.mp4)
+[![How Lumen works: a 7-minute narrated explainer](docs/how-lumen-works.jpg)](https://github.com/Quintui/education-app/raw/main/docs/how-lumen-works.mp4)
+
+*Click the image to download the MP4 (39 MB, 1080p).*
 
 A 7-minute narrated explainer of the whole app: the three layers, streaming to the screen, the knowledge check,
 the course tree, and every step of the lesson workflow, from plan to narration, animation, assembly and playback.
