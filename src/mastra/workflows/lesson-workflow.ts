@@ -73,7 +73,11 @@ const planLesson = createStep({
     });
 
     const plan = result.object;
-    plan.scenes = plan.scenes.map((scene, i) => ({ ...scene, id: `scene-${i + 1}` }));
+    plan.scenes = plan.scenes.map((scene, i) => ({
+      ...scene,
+      id: `scene-${i + 1}`,
+      transition: i === 0 ? "fade" : scene.transition,
+    }));
 
     const lessonId = lessonIdFor(courseId, nodeId);
     // Step outputs only reach the UI when the whole workflow finishes, so the plan is sent right away.
@@ -126,19 +130,22 @@ const animateScene = createStep({
   inputSchema: narratedSceneSchema,
   outputSchema: videoSceneSchema,
   execute: async ({ inputData, mastra, writer }) => {
-    const { lessonId, lessonTitle, scene, duration, cues, styleGuide } = inputData;
+    const { lessonId, lessonTitle, visualConcept, scene, duration, cues, styleGuide } = inputData;
     await reportScene(writer, lessonId, scene, "animating");
 
     const brief = `Lesson: ${lessonTitle}
-Scene: ${scene.title}
+Visual concept of the whole video: ${visualConcept}
+Scene: ${scene.title} (enters with a "${scene.transition}" transition)
 Goal: ${scene.goal}
 Narration (${duration.toFixed(1)}s spoken): "${plainNarration(scene.narration)}"
 Cue timings in seconds: ${JSON.stringify(cues)}
-Visual brief: ${scene.visual}
+Storyboard: ${scene.visual}
 Theme: ${JSON.stringify(styleGuide)}`;
 
     const animator = mastra.getAgent("sceneAnimator");
-    const first = await animator.generate(brief);
+    // Rich scenes are long programs; leave room so the code is never cut off.
+    const options = { modelSettings: { maxOutputTokens: 16000 } };
+    const first = await animator.generate(brief, options);
     let code = extractCode(first.text, "js|javascript");
 
     const error = syntaxError(code);
@@ -150,7 +157,7 @@ Theme: ${JSON.stringify(styleGuide)}`;
           role: "user",
           content: `That code throws a SyntaxError: ${error}. Return the corrected function body.`,
         },
-      ]);
+      ], options);
       code = extractCode(retry.text, "js|javascript");
       // Still broken: ship an empty scene, the player shows a titled fallback.
       if (syntaxError(code)) code = "";
@@ -164,6 +171,7 @@ Theme: ${JSON.stringify(styleGuide)}`;
       title: scene.title,
       goal: scene.goal,
       narration: plainNarration(scene.narration),
+      transition: scene.transition,
       duration,
       cues,
     };
@@ -230,6 +238,7 @@ const videoWorkflow = createWorkflow({
     return plan.scenes.map((scene, i) => ({
       lessonId,
       lessonTitle: plan.title,
+      visualConcept: plan.visualConcept,
       styleGuide,
       scene,
       previousNarration: spoken[i - 1],

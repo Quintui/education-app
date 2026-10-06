@@ -203,7 +203,8 @@ export function demoLessonStream({ courseId, nodeId }: { courseId: string; nodeI
           level: template.level,
           coreIntuition: "Mass curves space, and light simply follows the curve.",
           musicPrompt: "",
-          scenes: scenes.map((s) => ({ id: s.id, title: s.title, goal: s.goal, narration: "", visual: "" })),
+          visualConcept: "",
+          scenes: scenes.map((s) => ({ id: s.id, title: s.title, goal: s.goal, narration: "", visual: "", transition: s.transition })),
         },
       };
       writer.write({ type: "data-plan", id: lessonId, data: context.plan });

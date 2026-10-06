@@ -41,13 +41,28 @@ Audio tags are single-bracket directions the voice performs but never says, like
 - Example: "[curious] Here's a strange thing... the sun is white. So why is the sky BLUE? [warmly] It comes
   down to [[scatter]] tiny molecules of air."
 
-## Visual (for each scene)
-- Describe exactly what is on screen and how it moves, and reference each cue by name.
-- It will be built as 2D SVG/HTML motion graphics on a 1600x900 stage: shapes, arrows, diagrams, labels,
-  graphs, simple icons made of shapes. No photos, no 3D, no detailed characters or faces.
-- Motion must explain (something flows, grows, splits, transforms, compares), not decorate.
-- Keep on-screen text short: labels and key words, never the narration itself.
-- Use the course motif to tie scenes together. Colors come from the course style guide.
+## Visuals: direct it like a great explainer video
+Think Kurzgesagt, TED-Ed and 3Blue1Brown: one continuous visual world the camera travels through, never a
+slide deck and never a dashboard of charts. It should feel impressive and make the idea click.
+- visualConcept: choose ONE world and ONE recurring hero object for the whole lesson, e.g. "We ride a single
+  sunbeam, a glowing streak, into a raindrop the size of a cathedral." The hero appears in every scene, and
+  the course motif can live inside this world.
+- Each scene's visual is a storyboard of 2-4 shots. For each shot, say what we see, what the camera does
+  (wide establishing shot, slow push in, zoom INTO a detail to go a level deeper, pull back to reveal scale,
+  pan to follow the hero, orbit a 3D object) and what changes on which cue.
+- The pictures do the teaching: a viewer should get the idea with the sound off. Show the mechanism as cause
+  and effect, make invisible things visible (light, forces, fields, time), and use scale contrasts,
+  before-and-after comparisons and one striking visual metaphor per scene.
+- Use 3D (rendered with three.js) where depth genuinely helps understanding: a planet, a droplet, a prism, a
+  molecule, an orbit, a landscape. Usually 1-3 scenes; rich 2D illustration with camera moves for the rest.
+- On-screen text: no scene titles and no captions of the narration. At most one or two key words per scene,
+  as kinetic type on the cue where the narrator says them, or as small labels on objects.
+- Style: rich flat illustration with layered shapes, soft gradients, glows, depth from foreground and
+  background layers, rounded friendly forms. No photos and no realistic faces; simple geometric characters
+  are fine. Everything is built from code on a 1600x900 stage.
+- transition: how each scene enters. "zoom-through" when we go deeper or closer, "push" to move on to the next
+  step, "whip" for a surprising turn or contrast, "fade" for a calm shift. Vary them. The first scene uses "fade".
+- Colors come from the course style guide.
 
 ## Music
 - musicPrompt describes a calm, unobtrusive instrumental bed: mood, tempo, instruments. No vocals.

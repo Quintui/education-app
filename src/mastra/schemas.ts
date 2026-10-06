@@ -13,6 +13,9 @@ export const styleGuideSchema = z.object({
     .describe("One recurring visual motif that ties all scenes together"),
 });
 
+/** How a scene takes over from the one before it. */
+export const TRANSITIONS = ["zoom-through", "push", "whip", "fade"] as const;
+
 export const scenePlanSchema = z.object({
   id: z.string(),
   title: z.string().describe("2-5 word chapter title"),
@@ -22,7 +25,10 @@ export const scenePlanSchema = z.object({
     .describe("Spoken narration with [[cue-name]] markers before the words where visuals change"),
   visual: z
     .string()
-    .describe("What is on screen and how it moves, referencing cues by name"),
+    .describe("Storyboard of 2-4 shots: what we see, where the camera goes, what moves on each cue"),
+  transition: z
+    .enum(TRANSITIONS)
+    .describe("How this scene enters from the previous one. The first scene uses fade"),
 });
 
 export const lessonPlanSchema = z.object({
@@ -30,6 +36,9 @@ export const lessonPlanSchema = z.object({
   hook: z.string().describe("One sentence that makes the learner curious"),
   level: z.enum(["beginner", "intermediate", "advanced"]),
   coreIntuition: z.string().describe("The one mental model the whole lesson builds"),
+  visualConcept: z
+    .string()
+    .describe("The world the whole video lives in and its recurring hero object; scenes are shots in it"),
   scenes: z.array(scenePlanSchema),
   musicPrompt: z.string().describe("Prompt for a calm instrumental background track"),
 });
@@ -46,6 +55,7 @@ export const lessonContextSchema = z.object({
 export const sceneJobSchema = z.object({
   lessonId: z.string(),
   lessonTitle: z.string(),
+  visualConcept: z.string(),
   styleGuide: styleGuideSchema,
   scene: scenePlanSchema,
   previousNarration: z.string().optional(),
@@ -63,6 +73,7 @@ export const videoSceneSchema = z.object({
   goal: z.string(),
   /** Spoken text, kept so questions during the lesson know what was just said. */
   narration: z.string().default(""),
+  transition: z.enum(TRANSITIONS).default("fade"),
   duration: z.number(),
   cues: z.record(z.string(), z.number()),
 });
