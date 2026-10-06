@@ -206,6 +206,7 @@ export function demoLessonStream({ courseId, nodeId }: { courseId: string; nodeI
           scenes: scenes.map((s) => ({ id: s.id, title: s.title, goal: s.goal, narration: "", visual: "" })),
         },
       };
+      writer.write({ type: "data-plan", id: lessonId, data: context.plan });
       steps["plan-lesson"] = { status: "success", output: context };
       steps["video-workflow"] = { status: "running" };
       steps["materials-workflow"] = { status: "running" };

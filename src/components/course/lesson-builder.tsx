@@ -29,7 +29,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { formatTime } from "@/lib/format";
 import { appear, appearSmall, EASE_OUT, springy } from "@/lib/motion";
 import { cn } from "@/lib/utils";
-import type { Lesson, LessonContext, MaterialProgress, SceneProgress } from "@/mastra/schemas";
+import type { Lesson, LessonPlan, MaterialProgress, SceneProgress } from "@/mastra/schemas";
 
 type WorkflowData = WorkflowDataPart["data"];
 type StepStatus = "pending" | "running" | "success" | "failed";
@@ -38,12 +38,14 @@ type StepStatus = "pending" | "running" | "success" | "failed";
 function readProgress(parts: UIMessage["parts"]) {
   let workflow: WorkflowData | undefined;
   let lesson: Lesson | undefined;
+  let plan: LessonPlan | undefined;
   const scenes = new Map<string, SceneProgress["status"]>();
   const materials = new Map<MaterialProgress["kind"], MaterialProgress["status"]>();
 
   for (const part of parts) {
     if (part.type === "data-workflow") workflow = part.data as WorkflowData;
     if (part.type === "data-lesson") lesson = part.data as Lesson;
+    if (part.type === "data-plan") plan = part.data as LessonPlan;
     if (part.type === "data-scene") {
       const scene = part.data as SceneProgress;
       scenes.set(scene.sceneId, scene.status);
@@ -58,9 +60,8 @@ function readProgress(parts: UIMessage["parts"]) {
     const status = workflow?.steps[id]?.status;
     return status === "running" || status === "success" || status === "failed" ? status : "pending";
   };
-  const context = workflow?.steps["plan-lesson"]?.output as LessonContext | undefined;
 
-  return { workflow, lesson, scenes, materials, step, plan: context?.plan };
+  return { workflow, lesson, scenes, materials, step, plan };
 }
 
 function useElapsedSeconds(running: boolean) {

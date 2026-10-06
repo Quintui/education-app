@@ -62,7 +62,7 @@ const planLesson = createStep({
   id: "plan-lesson",
   inputSchema: z.object({ courseId: z.string(), nodeId: z.string() }),
   outputSchema: lessonContextSchema,
-  execute: async ({ inputData, mastra }) => {
+  execute: async ({ inputData, mastra, writer }) => {
     const { courseId, nodeId } = inputData;
     const course = await getCourse(courseId);
     if (!course) throw new Error(`Course ${courseId} not found`);
@@ -75,8 +75,12 @@ const planLesson = createStep({
     const plan = result.object;
     plan.scenes = plan.scenes.map((scene, i) => ({ ...scene, id: `scene-${i + 1}` }));
 
+    const lessonId = lessonIdFor(courseId, nodeId);
+    // Step outputs only reach the UI when the whole workflow finishes, so the plan is sent right away.
+    await writer.custom({ type: "data-plan", id: lessonId, data: plan });
+
     return {
-      lessonId: lessonIdFor(courseId, nodeId),
+      lessonId,
       courseId,
       nodeId,
       brief,

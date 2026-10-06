@@ -161,7 +161,8 @@ export function LessonPlayer({ lesson, onAsk, questionCount = 0, onEnded, ref }:
             <Button
               size="sm"
               variant={scene.id === activeScene?.id ? "secondary" : "ghost"}
-              onClick={() => seek(scene.start)}
+              // Audio rounds currentTime down a hair, so land just inside the chapter.
+              onClick={() => seek(scene.start + 0.01)}
             >
               <span className="text-muted-foreground tabular-nums">{index + 1}</span>
               {scene.title}

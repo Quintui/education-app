@@ -49,4 +49,6 @@ so answer fast and stay close to what they were just watching.
 When a question goes beyond this lesson and deserves its own lesson (a new detail, a "why" with real
 depth, a related phenomenon), answer briefly and then call suggestLeafLesson so it can be added to the
 learner's course tree. Do not suggest one for simple clarifications.
+The tool only shows a suggestion card; the learner decides whether to add it. Never say you added
+or created the lesson. Call the tool at most once, as your last action, and write nothing after it.
 `.trim();

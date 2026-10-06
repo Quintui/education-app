@@ -3,12 +3,12 @@
 Name any topic. A quick knowledge check finds where you are, a personal course maps out the path, and every
 lesson becomes an animated, narrated explainer with notes, a quiz and a playground.
 
-**Stack:** Next.js 16 · assistant-ui · shadcn/ui (Base UI) · Mastra workflows · OpenAI · ElevenLabs · GSAP · SQLite
+**Stack:** Next.js 16 · assistant-ui · shadcn/ui (Base UI) · Mastra workflows · OpenRouter (Claude Sonnet 5.5) · ElevenLabs · GSAP · SQLite
 
 ## Setup
 
 ```bash
-cp .env.example .env.local   # add OPENAI_API_KEY and ELEVENLABS_API_KEY (or LUMEN_DEMO=1)
+cp .env.example .env.local   # add OPENROUTER_API_KEY and ELEVENLABS_API_KEY (or LUMEN_DEMO=1)
 npm install
 npm run dev                  # app on http://localhost:3000
 npm run studio               # Mastra Studio on http://localhost:4111
@@ -17,21 +17,22 @@ npm run db:studio            # browse the local SQLite database
 
 ## How it works
 
-Three Mastra workflows, each streamed to the UI as typed data parts:
+Three Mastra workflows, each streamed to the UI as typed data parts. Every agent uses Claude Sonnet 5.5
+through OpenRouter with medium reasoning effort.
 
-| Workflow | Input | Streams | Model |
-| --- | --- | --- | --- |
-| `diagnoseWorkflow` | topic | `data-diagnostic`: questions appear as they are written | fast |
-| `courseWorkflow` | knowledge check answers | `data-course`: the learning path grows live, then the saved course | Opus |
-| `lessonWorkflow` | `{ courseId, nodeId }` | `data-workflow`, `data-scene`, `data-material`, `data-lesson` | Opus + fast |
+| Workflow | Input | Streams |
+| --- | --- | --- |
+| `diagnoseWorkflow` | topic | `data-diagnostic`: questions appear as they are written |
+| `courseWorkflow` | knowledge check answers | `data-course`: the learning path grows live, then the saved course |
+| `lessonWorkflow` | `{ courseId, nodeId }` | `data-workflow`, `data-scene`, `data-material`, `data-lesson` |
 
 ```
 lessonWorkflow
-plan-lesson (Opus, from a brief: learner profile, course map, what earlier lessons covered, what comes next)
+plan-lesson (from a brief: learner profile, course map, what earlier lessons covered, what comes next)
 ├─ video-workflow
 │   ├─ foreach scene (concurrency 3)
 │   │   ├─ narrate-scene  (ElevenLabs with timestamps → cue times in seconds)
-│   │   └─ animate-scene  (Opus writes GSAP code for the exact duration and cues)
+│   │   └─ animate-scene  (writes GSAP code for the exact duration and cues)
 │   └─ assemble-video     (concatenate narration, compose music)
 ├─ materials-workflow (parallel: notes, quiz, playground)
 └─ finalize-lesson

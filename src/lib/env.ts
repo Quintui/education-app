@@ -4,7 +4,7 @@
  */
 export const isDemoMode = () => process.env.LUMEN_DEMO === "1";
 
-const REQUIRED_KEYS = ["OPENAI_API_KEY", "ELEVENLABS_API_KEY"] as const;
+const REQUIRED_KEYS = ["OPENROUTER_API_KEY", "ELEVENLABS_API_KEY"] as const;
 
 /** API keys the app still needs, empty when everything is set up (or in demo mode). */
 export function missingKeys() {
