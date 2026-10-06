@@ -3,7 +3,18 @@
 Name any topic. A quick knowledge check finds where you are, a personal course maps out the path, and every
 lesson becomes an animated, narrated explainer with notes, a quiz and a playground.
 
-**Stack:** Next.js 16 · assistant-ui · shadcn/ui (Base UI) · Mastra workflows · OpenRouter (Claude Sonnet 5.5) · ElevenLabs · GSAP · SQLite
+**Stack:** Next.js 16 · assistant-ui · shadcn/ui (Base UI) · Mastra workflows · OpenRouter (GPT-6.1 Sol) · ElevenLabs · GSAP · three.js · SQLite
+
+## Watch: how Lumen works
+
+[![How Lumen works: a 7-minute narrated explainer](docs/how-lumen-works.jpg)](docs/how-lumen-works.mp4)
+
+A 7-minute narrated explainer of the whole app: the three layers, streaming to the screen, the knowledge check,
+the course tree, and every step of the lesson workflow, from plan to narration, animation, assembly and playback.
+
+It was made the way Lumen makes its lessons. The script and scenes were written by hand (with Claude Code)
+for Lumen's own stage kit, narrated through the app's ElevenLabs code with `[[cue]]` timing, and rendered frame
+by frame from the same stage page the lesson player uses.
 
 ## Setup
 
@@ -24,7 +35,7 @@ through OpenRouter with high reasoning effort.
 | --- | --- | --- |
 | `diagnoseWorkflow` | topic | `data-diagnostic`: questions appear as they are written |
 | `courseWorkflow` | knowledge check answers | `data-course`: the learning path grows live, then the saved course |
-| `lessonWorkflow` | `{ courseId, nodeId }` | `data-workflow`, `data-scene`, `data-material`, `data-lesson` |
+| `lessonWorkflow` | `{ courseId, nodeId }` | `data-workflow`, `data-plan`, `data-scene`, `data-material`, `data-lesson` |
 
 ```
 lessonWorkflow
