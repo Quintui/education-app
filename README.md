@@ -3,13 +3,13 @@
 Name any topic. A quick knowledge check finds where you are, a personal course maps out the path, and every
 lesson becomes an animated, narrated explainer with notes, a quiz and a playground.
 
-**Stack:** Next.js 16 · assistant-ui · shadcn/ui (Base UI) · Mastra workflows · OpenRouter (GPT-6.1 Sol) · ElevenLabs · GSAP · three.js · SQLite
+**Stack:** Next.js 16 · assistant-ui · shadcn/ui (Base UI) · Mastra workflows · OpenRouter (Claude Sonnet 5.5) · ElevenLabs · GSAP · three.js · SQLite
 
 ## Watch: how Lumen works
 
-[![How Lumen works: a 7-minute narrated explainer](docs/how-lumen-works.jpg)](https://github.com/Quintui/education-app/raw/main/docs/how-lumen-works.mp4)
+[![How Lumen works: a 7-minute narrated explainer](docs/how-lumen-works.jpg)](https://youtu.be/HhLHccW2hQc)
 
-*Click the image to download the MP4 (39 MB, 1080p).*
+*Watch on YouTube: [How Lumen works](https://youtu.be/HhLHccW2hQc)*
 
 A 7-minute narrated explainer of the whole app: the three layers, streaming to the screen, the knowledge check,
 the course tree, and every step of the lesson workflow, from plan to narration, animation, assembly and playback.
@@ -30,8 +30,8 @@ npm run db:studio            # browse the local SQLite database
 
 ## How it works
 
-Three Mastra workflows, each streamed to the UI as typed data parts. Every agent uses GPT-6.1 Sol
-through OpenRouter with high reasoning effort.
+Three Mastra workflows, each streamed to the UI as typed data parts. Every agent uses Claude Sonnet 5.5
+through OpenRouter with medium reasoning effort.
 
 | Workflow | Input | Streams |
 | --- | --- | --- |
